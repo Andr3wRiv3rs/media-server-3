@@ -28,6 +28,7 @@ const server = HTTP.createServer(async (req, res) => {
   const path = req.url
 
   res.setHeader("Content-Type", "text/plain; charset=utf-8")
+  res.statusCode = 200
 
   try {
     for (const handler of handlers) {
@@ -43,20 +44,22 @@ const server = HTTP.createServer(async (req, res) => {
         next: () => handler.callbacks[++currentCallback](props)
       }
 
-      handler.callbacks[currentCallback](props)
+      await handler.callbacks[currentCallback](props)
+
+      if (!res.writableEnded) res.end()
 
       return
     }
 
     res.write("Not found")
     res.statusCode = 404
-    res.end()
   } catch (error) {
     console.error(error)
     res.write('Internal server error')
     res.statusCode = 500
-    res.end()
   }
+
+  res.end()
 })
 
 const PORT = process.env.PORT || 11111

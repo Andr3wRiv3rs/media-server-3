@@ -1,14 +1,13 @@
-import { handler } from "../"
+import { handler } from ".."
 import fs from "fs"
-import { getMediaType } from "../filesystem/mediatype"
+import { getFileType } from "../filesystem/filetype"
 import { MEDIA_CHUNK_SIZE } from "../constants"
 
-handler("GET", /^\/media\?file=(.*)$/, ({ res, req }) => {
+handler("GET", /^\/file\?file=(.*)$/, ({ res, req }) => {
   const query = decodeURIComponent(RegExp.$1)
+  const fileType = getFileType(query)
 
-  const mediaType = getMediaType(query)
-
-  switch (mediaType) {
+  switch (fileType) {
     case "video":
     case "audio": {
       const range = req.headers.range || `0`
@@ -22,22 +21,24 @@ handler("GET", /^\/media\?file=(.*)$/, ({ res, req }) => {
         "Content-Range": `bytes ${start}-${end}/${stats.size}`,
         "Accept-Ranges": "bytes",
         "Content-Length": contentLength,
-        "Content-Type": mediaType === 'video' 
+        "Content-Type": fileType === 'video' 
           ? "video/mp4"
           : "audio/mp3",
       })
 
       const stream = fs.createReadStream(query, { start, end })
-
       stream.pipe(res)
 
       break
     }
 
+    case 'html': {
+      res.setHeader('Content-Type', "text/html; charset=utf-8")
+    }
+
     default: {
-      res.statusCode = 400
-      res.write("Invalid media")
-      res.end()
+      const stream = fs.createReadStream(query)
+      stream.pipe(res)
     }
   }
 })
