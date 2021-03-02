@@ -1,5 +1,6 @@
 import HTTP from "http"
 import { HTTPMethod, RequestCallback } from "./@types"
+import { driveTask } from "./filesystem/drives"
 
 const handlers: {
   method: HTTPMethod, 
@@ -7,6 +8,9 @@ const handlers: {
   callbacks: RequestCallback<any>[],
 }[] = []
 
+/**
+ * HTTP handler with middleware capability.
+ */
 export const handler = <State extends Record<string, unknown>> (
   method: HTTPMethod, 
   path: RegExp,
@@ -55,11 +59,15 @@ const server = HTTP.createServer(async (req, res) => {
   }
 })
 
-handler("GET", /^\/$/, ({ res }) => {
-  res.write("Hello world!")
-  res.end()
+const PORT = process.env.PORT || 11111
+
+server.listen(PORT)
+
+console.log(`Server listening on port ${PORT}`)
+
+/**
+ * Wait until drives are loaded.
+ */
+driveTask.then(() => {
+  import('./api').catch(console.error)
 })
-
-server.listen(11111)
-
-console.log("server listening on port 11111")
