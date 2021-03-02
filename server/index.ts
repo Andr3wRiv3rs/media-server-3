@@ -1,5 +1,5 @@
 import HTTP from "http"
-import { HTTPMethod, RequestCallback } from "./@types"
+import { HTTPMethod, RequestCallback } from "./types"
 import { driveTask } from "./filesystem/drives"
 
 const handlers: {

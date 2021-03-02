@@ -1,1 +1,1 @@
-export const MEDIA_CHUNK_SIZE = 10 ** 6 // 1MB
+export const MEDIA_CHUNK_SIZE = 10 ** 6 * 5 // 5MB
