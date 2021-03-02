@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "dev": "parcel ./public/index.html",
+    "build": "parcel ./public/index.html"
+  },
+  "devDependencies": {
+    "parcel": "^1.12.4",
+    "ts-node": "^9.1.1",
+    "ts-node-dev": "^1.1.6"
+  },
+  "dependencies": {
+    "axios": "^0.21.1",
+    "bitt": "^0.2.2"
+  }
+}
